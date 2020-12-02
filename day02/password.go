@@ -37,7 +37,7 @@ func (p *Password) IsTobogganPolicyCompliant() bool {
 	idxB := p.PosB - 1
 
 	// Check bounds on password value before subscripting.
-	l := len(p.Value)
+	l := len(p.Value) - 1
 	if l < idxA || l < idxB {
 		return false
 	}
