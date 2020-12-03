@@ -1,5 +1,8 @@
 # aoc-2020
 
+[![GoDoc](https://godoc.org/github.com/BenJetson/aoc-2020?status.svg)](https://godoc.org/github.com/BenJetson/aoc-2020)
+[![Go Report Card](https://goreportcard.com/badge/github.com/BenJetson/aoc-2020)](https://goreportcard.com/report/github.com/BenJetson/aoc-2020)
+
 ![Advent of Code with Santa Hat](https://user-images.githubusercontent.com/10427974/100974572-7db6a900-350a-11eb-9c80-18635d97861f.png)
 
 My solutions to the 2020 Advent of Code, written in Go.
