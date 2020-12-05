@@ -309,11 +309,11 @@ func main() {
 	count := 0
 	extCount := 0
 	for _, p := range passports {
-		if p.IsValid() {
+		if p.HasRequiredFields() {
 			count++
 		}
 
-		if p.IsValidExtended() {
+		if p.IsValid() {
 			extCount++
 		}
 	}
