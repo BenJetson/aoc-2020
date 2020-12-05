@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"io/ioutil"
-	"strconv"
 )
 
 const linefeed = '\n'
@@ -32,20 +31,16 @@ func ReadLinesFromFile(filename string) ([]string, error) {
 	return lines, nil
 }
 
+// ReadIntegersFromFile takes a
 func ReadIntegersFromFile(filename string) ([]int, error) {
 	lines, err := ReadLinesFromFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	var n int
-	var nums []int
-	for _, line := range lines {
-		if n, err = strconv.Atoi(line); err != nil {
-			return nil, err
-		}
-
-		nums = append(nums, n)
+	nums, err := SliceStringsToInts(lines)
+	if err != nil {
+		return nil, err
 	}
 
 	return nums, nil
