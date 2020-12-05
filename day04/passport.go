@@ -82,6 +82,8 @@ var eyeColors = [...]string{
 
 // IsValid checks to see whether a passport has both all of the required fields
 // AND those fields have an acceptable value.
+//
+// nolint: gocyclo //
 func (p Passport) IsValid() bool {
 	if !p.HasRequiredFields() {
 		return false
