@@ -31,7 +31,8 @@ func ReadLinesFromFile(filename string) ([]string, error) {
 	return lines, nil
 }
 
-// ReadIntegersFromFile takes a
+// ReadIntegersFromFile reads a file and attempts to parse each line as an
+// integer, returning the resultant slice of integers.
 func ReadIntegersFromFile(filename string) ([]int, error) {
 	lines, err := ReadLinesFromFile(filename)
 	if err != nil {
