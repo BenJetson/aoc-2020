@@ -6,8 +6,12 @@ import (
 	"strings"
 )
 
+// A Passport represents a collection of fields that pertain to a traveler's
+// personally identifying information.
 type Passport map[string]string
 
+// ParsePassportLine takes a puzzle input passport line and transforms it into
+// a Passport key/value store.
 func ParsePassportLine(line string) Passport {
 	p := make(Passport)
 
@@ -19,6 +23,8 @@ func ParsePassportLine(line string) Passport {
 		key = field[:3]
 		value = field[4:]
 
+		// The puzzle indicates that the country identifier field is to be
+		// ignored, so we shall not store this.
 		if key == "cid" {
 			continue
 		}
@@ -29,6 +35,8 @@ func ParsePassportLine(line string) Passport {
 	return p
 }
 
+// requiredFields is an array of fields that are required on a passport for it
+// to be considered valid.
 var requiredFields = [...]string{
 	"byr",
 	"iyr",
@@ -39,7 +47,9 @@ var requiredFields = [...]string{
 	"pid",
 }
 
-func (p Passport) IsValid() bool {
+// HasRequiredFields determines whether or not a passport contains all of the
+// required fields.
+func (p Passport) HasRequiredFields() bool {
 	_, hasCid := p["cid"]
 
 	if (!hasCid && len(requiredFields) != len(p)) ||
@@ -56,7 +66,10 @@ func (p Passport) IsValid() bool {
 	return true
 }
 
+// colorRE matches a 6 character hex color code with the leading octothorpe.
 var colorRE = regexp.MustCompile("#[0-9a-f]{6}")
+
+// eyeColors is an array of the eye color codes valid on a Passport.
 var eyeColors = [...]string{
 	"amb",
 	"blu",
@@ -67,61 +80,60 @@ var eyeColors = [...]string{
 	"oth",
 }
 
-func (p Passport) IsValidExtended() bool {
-	if !p.IsValid() {
+// IsValid checks to see whether a passport has both all of the required fields
+// AND those fields have an acceptable value.
+func (p Passport) IsValid() bool {
+	if !p.HasRequiredFields() {
 		return false
 	}
 
-	var byr, iyr, eyr int
-	var hgt string
-	var hgtValueStr string
-	var hgtValue int
-	var hgtUnit string
-	var hcl string
-	var ecl string
 	var err error
 
+	var byr int
 	if byr, err = strconv.Atoi(p["byr"]); err != nil {
 		return false
 	} else if byr > 2002 || byr < 1920 {
 		return false
 	}
 
+	var iyr int
 	if iyr, err = strconv.Atoi(p["iyr"]); err != nil {
 		return false
 	} else if iyr < 2010 || iyr > 2020 {
 		return false
 	}
 
+	var eyr int
 	if eyr, err = strconv.Atoi(p["eyr"]); err != nil {
 		return false
 	} else if eyr < 2020 || eyr > 2030 {
 		return false
 	}
 
-	hgt = p["hgt"]
-	hgtUnit = hgt[len(hgt)-2:]
-	hgtValueStr = hgt[:len(hgt)-2]
+	rawHgt := p["hgt"]
+	hgtUnit := rawHgt[len(rawHgt)-2:]
+	hgtStr := rawHgt[:len(rawHgt)-2]
 
 	if hgtUnit != "in" && hgtUnit != "cm" {
 		return false
 	}
 
-	if hgtValue, err = strconv.Atoi(hgtValueStr); err != nil {
+	var hgt int
+	if hgt, err = strconv.Atoi(hgtStr); err != nil {
 		return false
-	} else if hgtUnit == "in" && (hgtValue < 59 || hgtValue > 76) {
+	} else if hgtUnit == "in" && (hgt < 59 || hgt > 76) {
 		return false
-	} else if hgtUnit == "cm" && (hgtValue < 150 || hgtValue > 193) {
+	} else if hgtUnit == "cm" && (hgt < 150 || hgt > 193) {
 		return false
 	}
 
-	hcl = p["hcl"]
+	hcl := p["hcl"]
 	if !colorRE.MatchString(hcl) {
 		return false
 	} else if len(hcl) > 0 && hcl[0] != '#' {
 	}
 
-	ecl = p["ecl"]
+	ecl := p["ecl"]
 	validEcl := false
 	for _, c := range eyeColors {
 		if ecl == c {

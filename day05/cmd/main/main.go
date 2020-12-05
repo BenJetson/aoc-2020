@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// My puzzle input.
 	lines := []string{
 		"FBFBBBFRLL",
 		"BFFFBFFRRR",

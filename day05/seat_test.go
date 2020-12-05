@@ -52,6 +52,11 @@ func TestSeatFromBinarySpacePartition(t *testing.T) {
 			bsp:       "BBFFBBFRXL",
 			expectErr: true,
 		},
+		{
+			alias:     "badLen",
+			bsp:       "BBLLR",
+			expectErr: true,
+		},
 	}
 
 	for _, tc := range testCases {
