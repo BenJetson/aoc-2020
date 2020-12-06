@@ -23,25 +23,15 @@ func (m *SeatMap) MarkSeatTaken(s Seat) {
 // FindEmptySeatInPartialRow searches the map for a row of seats that is both
 // not empty and not full. The first such available seat from the front of the
 // plane, left to right, is returned if such exists.
-//
-// nolint: gocyclo //
 func (m *SeatMap) FindEmptySeatInPartialRow() (Seat, error) {
 	for i := 0; i < RowCount; i++ {
 		// This aircraft is missing some rows towards the front and back, and
 		// we are guaranteed to be the only empty seat. Therefore, if a given
 		// side of the aisle is completely empty we know it does not exist.
-		isLeftPartial := false
-		isRightPartial := false
+		var isLeftPartial, isRightPartial bool
 		for j, taken := range m[i] {
-			if j < ColCount/2 {
-				if taken {
-					isLeftPartial = true
-				}
-			} else {
-				if taken {
-					isRightPartial = true
-				}
-			}
+			isLeftPartial = isLeftPartial || (taken && j < ColCount/2)
+			isRightPartial = isRightPartial || (taken && j >= ColCount/2)
 		}
 
 		if isLeftPartial {
