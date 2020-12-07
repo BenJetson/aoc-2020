@@ -37,9 +37,6 @@ func ParseLinesToSurveyGroups(lines []string) []SurveyGroup {
 
 		// Add this person's responses to the tally.
 		for _, r := range line {
-			if _, ok := sg.tally[r]; !ok {
-				sg.tally[r] = 0
-			}
 			sg.tally[r]++
 		}
 	}
