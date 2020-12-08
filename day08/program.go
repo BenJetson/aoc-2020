@@ -98,6 +98,8 @@ func (p *Program) RunUntilLoop() (int, error) {
 // Interested parties should check p.Terminated after running the program to
 // see if the program exited normally.
 func (p *Program) RunWithSafetyCounter() (int, error) {
+	// There is a better way of solving part 2. See RunButDontDoubleJump below.
+
 	// The safetyThreshold is an arbitrary value. Once the program has
 	// executed this many instructions, it shall consider the program to be
 	// stuck in an infinite loop and halt execution.
@@ -109,6 +111,30 @@ func (p *Program) RunWithSafetyCounter() (int, error) {
 
 	p.Reset()
 	for !p.Terminated && p.SafetyCounter < safetyThreshold {
+		err := p.ExecuteNext()
+		if err != nil {
+			return 0, err
+		}
+		p.SafetyCounter++
+	}
+	return p.Accumulator, nil
+}
+
+// RunButDontDoubleJump will execute the program, but stop infinite loops by
+// preventing jump instructions from executing more than once.
+func (p *Program) RunButDontDoubleJump() (int, error) {
+	p.Reset()
+	for !p.Terminated {
+		// If this is a jump instruction that has been previously executed,
+		// this will form an infinite loop. Stop execution.
+		//
+		// Credit for this idea goes to @Nathan-Binkley.
+		// https://github.com/Nathan-Binkley
+		i := &p.Instructions[p.ProgramCounter]
+		if i.OpCode == Jump && i.ExecutedOnce {
+			break
+		}
+
 		err := p.ExecuteNext()
 		if err != nil {
 			return 0, err
@@ -144,8 +170,8 @@ func (p *Program) FixOneBugInfiniteLoop() (int, error) {
 			continue
 		}
 
-		// Run the program with the safety counter enabled.
-		acc, err := p.RunWithSafetyCounter()
+		// Run the program with the double jump guard enabled.
+		acc, err := p.RunButDontDoubleJump()
 		if err != nil {
 			return 0, err
 		}
@@ -153,6 +179,7 @@ func (p *Program) FixOneBugInfiniteLoop() (int, error) {
 		// If the program terminated successfully, then no infinite loop has
 		// occurred. The program is fixed. Return the accumulator value.
 		if p.Terminated {
+			// fmt.Println("program fixed, detected fault on line", i)
 			return acc, nil
 		}
 
